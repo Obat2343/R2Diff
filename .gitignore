@@ -1,4 +1,8 @@
 # Environments
 env/
 
+# code
+pycode/__pycache__/
 
+# dataset
+dataset/
