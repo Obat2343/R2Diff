@@ -80,7 +80,7 @@ from pycode.retrieval import Direct_Retrieval, Image_Based_Retrieval_SPE, BYOL_R
 from pycode.model.diffusion import Denoising_Diffusion
 
 ### SET CONFIG ###
-dataset_name = "RLBench-test"
+dataset_name = cfg.DATASET.RLBENCH.PATH
 mode = "val"
 max_index = args.num_seq
 max_try = args.max_try
@@ -124,7 +124,7 @@ for task_index, task_name in enumerate(args.tasks):
     print(task_name)
     # my_task = 'PickUpCup' # 'ScoopWithSpatula','ReachTarget','TakePlateOffColoredDishRack','StackWine','CloseBox','PushButton','PutKnifeOnChoppingBoard','PutRubbishInBin','PickUpCup','OpenWineBottle', 'OpenGrill', 'OpenJar', 'CloseJar', 'WipeDesk','TakePlateOffColoredDishRack', 'PutUmbrellaInUmbrellaStand'
 
-    dataset_path = f"../dataset/{dataset_name}/{mode}/{task_name}"
+    dataset_path = os.path.join("../dataset",dataset_name,mode,task_name)
     print(f"dataset path:{dataset_path}")
 
     current_task = task_name
@@ -139,13 +139,11 @@ for task_index, task_name in enumerate(args.tasks):
 
     cfg.merge_from_file(model_config_path)
 
-    dataset_name = "RLBench-test"
-    cfg.DATASET.RLBENCH.PATH = os.path.abspath(f'../dataset/{dataset_name}')
     cfg.DATASET.RLBENCH.TASK_NAME = task_name
+    cfg.DATASET.RLBENCH.PATH = dataset_name
     val_dataset = RLBench_DMOEBM(mode, cfg, save_dataset=False, num_frame=frame, rot_mode=rot_mode)
     val_dataloader = torch.utils.data.DataLoader(val_dataset, batch_size=1, shuffle=False, num_workers=8)
 
-    cfg.DATASET.RLBENCH.PATH = os.path.abspath('../dataset/RLBench4')
     train_dataset  = RLBench_DMOEBM("train", cfg, save_dataset=False, num_frame=frame, rot_mode=rot_mode)
     temp_loader = torch.utils.data.DataLoader(train_dataset, batch_size=len(train_dataset), shuffle=False, num_workers=8)
     for data in temp_loader:
@@ -312,14 +310,6 @@ for task_index, task_name in enumerate(args.tasks):
                         Retriever = MSE_Based_Retrieval(train_dataset, model)
                     elif inference_method == "retrieve_from_SPE": # changed from retrieve_from_image to retrieve_from_SPE
                         Retriever = Image_Based_Retrieval_SPE(train_dataset, model)
-                    elif inference_method == "retrieve_from_CLIP":
-                        Retriever = CLIP_Retrieval(train_dataset)
-                    elif inference_method == "retrieve_from_BYOL":
-                        Retriever = BYOL_Retrieval(train_dataset, task_name, gn=False)
-                    elif inference_method == "retrieve_from_BYOL_gn":
-                        Retriever = BYOL_Retrieval(train_dataset, task_name, gn=True)
-                    elif inference_method == "retrieve_from_BYOL_gn_wo_crop":
-                        Retriever = BYOL_Retrieval(train_dataset, task_name, gn=True, wo_crop=True)
                 
                 if inference_method == "retrieve_from_motion":
                     near_queries = Retriever.retrieve_k_sample(h_query)[0]

@@ -3,8 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from timm.models.layers import DropPath
 
-from .Attention import AttentionBlock
-
 class CoordConv2d(torch.nn.modules.conv.Conv2d):
     """
     from https://github.com/walsvid/CoordConv/blob/master/coordconv.py
@@ -273,9 +271,6 @@ class Resnet_Like_Encoder(nn.Module):
             layer = ConvBlock(dim, act=activation, norm=norm, drop_path=drop_path_rate, layer_scale_init_value=layer_scale_init_value)
         elif layer_name == 'convnext':
             layer = ConvNextBlock(dim, drop_path=drop_path_rate, layer_scale_init_value=layer_scale_init_value)
-        elif layer_name == 'atten':
-            layer = AttentionBlock(image_size, dim, heads, layer_index, attention=atten, pos_emb=pos_emb, activation=activation, norm=norm,
-                        drop_path=drop_path_rate, rel_emb_method='cross', rel_emb_ratio=1.9, rel_emb_mode='ctx', rel_emb_skip=0)
         else:
             raise ValueError("invalid block")
         
@@ -392,9 +387,6 @@ class Resnet_Like_Decoder(nn.Module):
             layer = ConvBlock(dim, act=activation, norm=norm, drop_path=drop_path_rate, layer_scale_init_value=layer_scale_init_value)
         elif layer_name == 'convnext':
             layer = ConvNextBlock(dim, drop_path=drop_path_rate, layer_scale_init_value=layer_scale_init_value)
-        elif layer_name == 'atten':
-            layer = AttentionBlock(image_size, dim, heads, layer_index, attention=atten, pos_emb=pos_emb, activation=activation, norm=norm,
-                        drop_path=drop_path_rate, rel_emb_method='cross', rel_emb_ratio=1.9, rel_emb_mode='ctx', rel_emb_skip=0)
         else:
             raise ValueError("invalid block")
         

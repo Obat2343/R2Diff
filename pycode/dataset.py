@@ -50,7 +50,7 @@ class RLBench_DMOEBM(torch.utils.data.Dataset):
         if not os.path.exists(self._pickle_path) or save_dataset:
             # create dataset
             print('There is no pickle data')
-            print('create pickle data')
+            print(f'create pickle data from {data_root_dir}')
             self.add_data(data_root_dir, cfg)
             self.preprocess()
             print('done')
